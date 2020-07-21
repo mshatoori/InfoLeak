@@ -1,0 +1,75 @@
+version: '3.7'
+
+networks:
+  testnet:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: "10.1.${SUBNET}.0/24"
+
+services:
+  doh:
+    build:
+      context: ./dns-over-https
+      dockerfile: Dockerfile.client
+    hostname: doh
+    image: doh:latest
+    volumes:
+      - "./dataset/${SUBNET}:/logs"
+    networks:
+      testnet:
+        ipv4_address: "10.1.${SUBNET}.10"
+
+  doh_probe:
+    image: kaazing/tcpdump
+    volumes:
+      - "./dataset/${SUBNET}:/tcpdump"
+    network_mode: "service:doh"
+    command: [ "-i", "any", "-w", "/tcpdump/doh.pcap", "icmp or port 53 or port 443"]
+
+  selenium-hub:
+    image: selenium/hub:latest
+    hostname: selenium-hub
+    networks:
+      - testnet
+    depends_on:
+      - doh
+      - doh_probe
+    environment:
+      - GRID_MAX_SESSION=10000
+
+#  browser:
+#    image: selenium/standalone-firefox:latest
+#    volumes:
+#      - /dev/shm:/dev/shm
+#    networks:
+#      - testnet
+#    dns: "10.1.${SUBNET}.10"
+#    depends_on:
+#      - doh
+#      - doh_probe
+
+  firefox:
+    image: selenium/node-firefox:latest
+    volumes:
+      - /dev/shm:/dev/shm
+    depends_on:
+      - selenium-hub
+    networks:
+      - testnet
+    dns: "10.1.${SUBNET}.10"
+    environment:
+      - HUB_HOST=selenium-hub
+      - NODE_MAX_INSTANCES=10000
+      - NODE_MAX_SESSION=10000
+
+  controller:
+    build: ./controller
+    image: mrmontazeri/controller:latest
+    depends_on:
+      - selenium-hub
+    networks:
+      - testnet
+    environment:
+      - PYTHONUNBUFFERED=1

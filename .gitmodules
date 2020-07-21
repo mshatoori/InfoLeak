@@ -1,0 +1,3 @@
+[submodule "dns-over-https"]
+	path = dns-over-https
+	url = git@github.com:mshatoori/dns-over-https.git
