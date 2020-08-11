@@ -23,8 +23,8 @@ def ping(data, id=0):
     logger.error("Couldn't ping proxy!")
 
 
-def read_hosts():
-    f = open('hosts.csv')
+def read_hosts(path='./hosts.csv'):
+    f = open(path)
     reader = csv.reader(f)
 
     hosts = []

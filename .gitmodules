@@ -1,3 +1,9 @@
 [submodule "dns-over-https"]
 	path = dns-over-https
 	url = git@github.com:mshatoori/dns-over-https.git
+[submodule "DoHlyzer"]
+	path = DoHlyzer
+	url = git@github.com:ahlashkari/DoHlyzer.git
+[submodule "flowvisualizer"]
+	path = flowvisualizer
+	url = git@gitlab.com:monta2009/flowvisualizer.git

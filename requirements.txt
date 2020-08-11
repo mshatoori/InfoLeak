@@ -2,3 +2,8 @@ scapy
 jupyter
 docker
 selenium
+cryptography
+matplotlib
+tslearn
+seglearn
+pandas

@@ -4,3 +4,4 @@ dataset/
 logs/
 tcpdump/
 playground.ipynb
+__pycache__/
